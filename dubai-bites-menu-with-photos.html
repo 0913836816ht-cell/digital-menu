@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dubai Bites · Digital Menu</title>
+<meta name="description" content="Browse the Dubai Bites demo digital menu: burgers, pizza, drinks and desserts with prices in AED.">
+<style>
+/* ===== COLORS: edit these to restyle the menu ===== */
+:root{
+  --bg:#fdfbf6;--card:#fff;--text:#1f2a24;--muted:#5f6b64;--border:#e7e2d6;
+  --accent:#0f7a57;--accent-dark:#0a5c41;--accent-soft:#e6f3ed;
+  --spicy:#b4391f;--spicy-soft:#fbe9e4;--field:#fff;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#14201a;--card:#1b2a22;--text:#eef3ef;--muted:#a9b8af;--border:#2c3d33;--accent:#2fb887;--accent-dark:#6fd8b0;--accent-soft:#1f3a2f;--spicy:#ff9c85;--spicy-soft:#3d2620;--field:#1b2a22}
+}
+:root[data-theme="dark"]{--bg:#14201a;--card:#1b2a22;--text:#eef3ef;--muted:#a9b8af;--border:#2c3d33;--accent:#2fb887;--accent-dark:#6fd8b0;--accent-soft:#1f3a2f;--spicy:#ff9c85;--spicy-soft:#3d2620;--field:#1b2a22}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.5;overflow-x:hidden}
+.wrap{max-width:880px;margin:0 auto;padding:0 16px}
+header{padding:22px 0 14px;text-align:center}
+.demo{display:inline-block;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-dark);background:var(--accent-soft);padding:3px 10px;border-radius:999px;margin-bottom:8px}
+h1{margin:0;font-size:1.7rem;letter-spacing:-.01em;color:var(--accent-dark)}
+.sub{margin:2px 0 0;color:var(--muted);font-size:.95rem}
+.controls{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:10px 0 12px;border-bottom:1px solid var(--border)}
+input[type=search]{width:100%;font:inherit;font-size:1rem;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:var(--field);color:var(--text)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{font:inherit;font-size:.9rem;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:var(--field);color:var(--text);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.count{margin:14px 0 4px;font-size:.85rem;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1fr;gap:16px;padding:8px 0 28px;margin:0;list-style:none}
+@media(min-width:640px){.grid{grid-template-columns:repeat(2,1fr);gap:20px}h1{font-size:2rem}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.photo{aspect-ratio:4/3;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:3.4rem;line-height:1}
+.body{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.name{margin:0;font-size:1.1rem;line-height:1.3}
+.price{font-weight:700;color:var(--accent-dark);white-space:nowrap}
+.desc{margin:0;color:var(--muted);font-size:.93rem}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:4px}
+.tag{font-size:.75rem;font-weight:600;padding:3px 9px;border-radius:999px}
+.veg{background:var(--accent-soft);color:var(--accent-dark)}
+.spicy{background:var(--spicy-soft);color:var(--spicy)}
+.empty{text-align:center;padding:40px 16px;border:1px dashed var(--border);border-radius:16px;margin:12px 0 28px;background:var(--card)}
+.empty h2{margin:0 0 6px;font-size:1.15rem}
+.empty p{margin:0 0 16px;color:var(--muted)}
+.clear{font:inherit;font-weight:600;padding:10px 18px;border:0;border-radius:10px;background:var(--accent);color:#fff;cursor:pointer}
+[hidden]{display:none!important}
+footer{text-align:center;padding:20px 16px 32px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--border)}
+.sr{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <span class="demo">Demo restaurant menu</span>
+  <!-- EDIT RESTAURANT NAME AND SUBTITLE HERE -->
+  <h1>Dubai Bites</h1>
+  <p class="sub">Fresh flavours. Simply served.</p>
+</header>
+<div class="wrap">
+  <div class="controls">
+    <label for="search" class="sr">Search the menu</label>
+    <input id="search" type="search" placeholder="Search food or description…" autocomplete="off">
+    <div class="chips" role="group" aria-label="Filter by category" id="chips"></div>
+  </div>
+  <p class="count" id="count" aria-live="polite"></p>
+  <ul class="grid" id="grid"></ul>
+  <div class="empty" id="empty" hidden>
+    <h2>No items found</h2>
+    <p>Try a different search or category.</p>
+    <button type="button" class="clear" id="clearBtn">Clear filters</button>
+  </div>
+</div>
+<footer>Dubai Bites · Sample digital menu</footer>
+<script>
+/* ===== EDIT MENU ITEMS HERE =====
+   category: Burgers | Pizza | Drinks | Desserts
+   image: direct HTTPS photo link (use your own photo link here); icon/tint: shown if a photo fails to load */
+var MENU_ITEMS=[
+ {name:"Classic Beef Burger",image:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=70",category:"Burgers",price:28,vegetarian:false,spicy:false,icon:"🍔",tint:"#f6e3c8",description:"Juicy beef patty, melted cheddar, crisp lettuce and house sauce in a toasted bun."},
+ {name:"Crispy Chicken Burger",image:"https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=800&q=70",category:"Burgers",price:25,vegetarian:false,spicy:false,icon:"🍗",tint:"#f8e6b8",description:"Golden fried chicken, fresh slaw and creamy mayo on a soft brioche bun."},
+ {name:"Garden Veggie Burger",image:"https://images.unsplash.com/photo-1520072959219-c595dc870360?auto=format&fit=crop&w=800&q=70",category:"Burgers",price:23,vegetarian:true,spicy:false,icon:"🥬",tint:"#dcefd6",description:"Hearty vegetable patty with avocado, tomato and fresh greens."},
+ {name:"Margherita Pizza",image:"https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=800&q=70",category:"Pizza",price:32,vegetarian:true,spicy:false,icon:"🍕",tint:"#f9dccd",description:"Stone-baked crust, tomato sauce, fresh mozzarella and basil."},
+ {name:"BBQ Chicken Pizza",image:"https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=70",category:"Pizza",price:38,vegetarian:false,spicy:false,icon:"🍖",tint:"#f1d3c0",description:"Smoky BBQ sauce, tender chicken, red onion and bubbling cheese."},
+ {name:"Spicy Vegetable Pizza",image:"https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=70",category:"Pizza",price:34,vegetarian:true,spicy:true,icon:"🌶️",tint:"#f9d6d0",description:"Roasted peppers, olives and mushrooms with a fiery chilli kick."},
+ {name:"Fresh Orange Juice",image:"https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=800&q=70",category:"Drinks",price:14,vegetarian:true,spicy:false,icon:"🍊",tint:"#fde3bd",description:"Squeezed to order for a bright, naturally sweet sip."},
+ {name:"Iced Latte",image:"https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=800&q=70",category:"Drinks",price:18,vegetarian:true,spicy:false,icon:"🧋",tint:"#eadccb",description:"Smooth espresso and cold milk over ice. Cool and creamy."},
+ {name:"Mint Lemonade",image:"https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=800&q=70",category:"Drinks",price:16,vegetarian:true,spicy:false,icon:"🍋",tint:"#e3f1c9",description:"Zesty lemon blended with cool fresh mint. Very refreshing."},
+ {name:"Chocolate Brownie",image:"https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=70",category:"Desserts",price:19,vegetarian:true,spicy:false,icon:"🍫",tint:"#e4d0c4",description:"Rich, fudgy chocolate brownie with a soft, gooey centre."},
+ {name:"Cheesecake",image:"https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=800&q=70",category:"Desserts",price:22,vegetarian:true,spicy:false,icon:"🍰",tint:"#f8e0e6",description:"Creamy baked cheesecake on a buttery biscuit base."},
+ {name:"Vanilla Ice Cream",image:"https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?auto=format&fit=crop&w=800&q=70",category:"Desserts",price:12,vegetarian:true,spicy:false,icon:"🍨",tint:"#fbf0cf",description:"Three scoops of silky vanilla ice cream. Simple and sweet."}
+];
+var CATEGORIES=["All","Burgers","Pizza","Drinks","Desserts"];
+var state={category:"All",query:""};
+var chipsEl=document.getElementById("chips"),gridEl=document.getElementById("grid"),
+    emptyEl=document.getElementById("empty"),countEl=document.getElementById("count"),
+    searchEl=document.getElementById("search");
+
+function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
+
+function renderChips(){
+  chipsEl.innerHTML="";
+  CATEGORIES.forEach(function(cat){
+    var b=el("button","chip",cat);b.type="button";
+    b.setAttribute("aria-pressed",String(state.category===cat));
+    b.onclick=function(){state.category=cat;renderChips();renderMenu()};
+    chipsEl.appendChild(b);
+  });
+}
+function makeCard(i){
+  var li=el("li","card");
+  var ph=el("div","photo");ph.style.background=i.tint;
+  var im=document.createElement("img");im.loading="lazy";im.alt=i.name;im.src=i.image;
+  im.onerror=function(){im.remove();ph.textContent=i.icon;ph.setAttribute("role","img");ph.setAttribute("aria-label",i.name)};
+  ph.appendChild(im);
+  var body=el("div","body"),row=el("div","row");
+  row.append(el("h2","name",i.name),el("span","price","AED "+i.price));
+  body.append(row,el("p","desc",i.description));
+  if(i.vegetarian||i.spicy){
+    var t=el("div","tags");
+    if(i.vegetarian)t.append(el("span","tag veg","🌱 Vegetarian"));
+    if(i.spicy)t.append(el("span","tag spicy","🌶️ Spicy"));
+    body.append(t);
+  }
+  li.append(ph,body);return li;
+}
+function renderMenu(){
+  var q=state.query.trim().toLowerCase();
+  var res=MENU_ITEMS.filter(function(i){
+    return (state.category==="All"||i.category===state.category)&&(!q||(i.name+" "+i.description).toLowerCase().indexOf(q)>-1);
+  });
+  gridEl.innerHTML="";
+  res.forEach(function(i){gridEl.appendChild(makeCard(i))});
+  var none=res.length===0;
+  emptyEl.hidden=!none;gridEl.hidden=none;
+  countEl.textContent=none?"No items found":res.length+(res.length===1?" item":" items");
+}
+searchEl.addEventListener("input",function(e){state.query=e.target.value;renderMenu()});
+document.getElementById("clearBtn").onclick=function(){
+  state.category="All";state.query="";searchEl.value="";renderChips();renderMenu();searchEl.focus();
+};
+renderChips();renderMenu();
+</script>
+</body>
+</html>
